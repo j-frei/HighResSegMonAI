@@ -43,6 +43,7 @@ from monai.transforms import (
     ScaleIntensityd,
     ToTensord,
     DataStats,
+    Resized,
 )
 from monai.visualize import plot_2d_or_3d_image
 
@@ -89,6 +90,7 @@ def main():
             LoadNiftid(keys=["img", "seg"]),
             AsChannelFirstd(keys=["img", "seg"], channel_dim=-1),
             AddChanneld(keys=["img", "seg"]),
+            Resized(keys=["img", "seg"], spatial_size=(80,120,160), mode="trilinear", align_corners=True),
             ScaleIntensityd(keys="img"),
             RandScaleIntensityd(keys="img", prob=0.4, factors=0.2),
             RandZoomd(keys=["img","seg"], prob=0.8, min_zoom=0.8, max_zoom=1.2),
@@ -107,6 +109,7 @@ def main():
             LoadNiftid(keys=["img", "seg"]),
             AsChannelFirstd(keys=["img", "seg"], channel_dim=-1),
             AddChanneld(keys=["img", "seg"]),
+            Resized(keys=["img", "seg"], spatial_size=(80,120,160), mode="trilinear", align_corners=True),
             ScaleIntensityd(keys="img"),
             ToTensord(keys=["img", "seg"]),
         ]
@@ -141,8 +144,8 @@ def main():
         dimensions=3,
         in_channels=1,
         out_channels=1,
-        channels=(64, 128, 256),
-        strides=(2, 2),
+        channels=(16, 32, 64, 128),
+        strides=(2, 2, 2),
         num_res_units=2,
     ).to(device)
     loss_function = monai.losses.DiceLoss(sigmoid=True)

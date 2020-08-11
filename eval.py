@@ -27,7 +27,7 @@ from monai.engines import get_devices_spec
 from monai.inferers import sliding_window_inference
 from monai.metrics import DiceMetric
 from monai.networks.nets import UNet
-from monai.transforms import AsChannelFirstd, AddChanneld, Compose, LoadNiftid, ScaleIntensityd, ToTensord
+from monai.transforms import AsChannelFirstd, AddChanneld, Compose, LoadNiftid, ScaleIntensityd, ToTensord, Resized
 
 
 def main():
@@ -74,6 +74,7 @@ def main():
             LoadNiftid(keys=["img", "seg"]),
             AsChannelFirstd(keys=["img", "seg"], channel_dim=-1),
             AddChanneld(keys=["img", "seg"]),
+            Resized(keys=["img", "seg"], spatial_size=(80,120,160), mode="trilinear", align_corners=True),
             ScaleIntensityd(keys="img"),
             ToTensord(keys=["img", "seg"]),
         ]
@@ -89,8 +90,8 @@ def main():
         dimensions=3,
         in_channels=1,
         out_channels=1,
-        channels=(64, 128, 256),
-        strides=(2, 2),
+        channels=(16, 32, 64, 128),
+        strides=(2, 2, 2),
         num_res_units=2,
     ).to(devices[0])
 
